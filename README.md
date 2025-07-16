@@ -62,7 +62,15 @@ A `type-check` script is also added to `package.json`, which runs TypeScript's `
 
 # next-page-generator
 
-A flexible tool to dynamically generate Next.js pages from data sources.
+A flexible tool for dynamically generating Next.js pages from data sources. This package enables you to create pages in your Next.js application automatically based on your data files.
+
+## Features
+
+- 🚀 Generate Next.js pages from JSON data sources
+- 👀 Watch data files for changes and regenerate pages automatically
+- 🔧 Customizable page templates
+- 🧩 Support for nested page paths
+- 📄 TypeScript/JavaScript compatible (.js, .jsx, .ts, .tsx)
 
 ## Installation
 
@@ -72,12 +80,13 @@ npm install next-page-generator
 yarn add next-page-generator
 ```
 
-## Quick Start with Configuration
+## Quick Start
 
-1. Create a configuration file in your project root:
+### 1. Create a configuration file
+
+Create `next-page-generator.config.js` in your project root:
 
 ```js
-// next-page-generator.config.js
 module.exports = {
   sourceFile: 'data/pages.json',
   outputDir: 'pages',
@@ -85,17 +94,39 @@ module.exports = {
 };
 ```
 
-2. Add to your package.json scripts:
+### 2. Prepare your data file
+
+Create `data/pages.json`:
+
+```json
+{
+  "items": [
+    {
+      "path": "about",
+      "title": "About Us",
+      "content": "Learn more about our company."
+    },
+    {
+      "path": "blog/first-post",
+      "title": "My First Blog Post",
+      "content": "This is my first blog post content."
+    }
+  ]
+}
+```
+
+### 3. Add to your package.json scripts
 
 ```json
 {
   "scripts": {
-    "dev": "concurrently \"next-page-generator\" \"next dev\""
+    "dev": "concurrently \"next-page-generator\" \"next dev\"",
+    "build": "next-page-generator --no-watch && next build"
   }
 }
 ```
 
-3. Run your development server:
+### 4. Start your development server
 
 ```bash
 npm run dev
@@ -105,15 +136,15 @@ npm run dev
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| sourceFile | string | 'data/sourceData.json' | Path to the source data file |
-| outputDir | string | 'pages' | Directory where pages will be generated |
-| watch | boolean | true | Whether to watch for changes to the source file |
-| pathProperty | string | 'path' | Property name to use as path (fallbacks to 'id') |
-| fileExtension | string | '.js' | File extension for generated pages |
-| template | function | (built-in) | Custom page template function |
-| verbose | boolean | true | Whether to log messages |
+| `sourceFile` | string | 'data/sourceData.json' | Path to the JSON data file |
+| `outputDir` | string | 'pages' | Directory where pages will be generated |
+| `watch` | boolean | true | Watch for changes in the data file |
+| `pathProperty` | string | 'path' | Property in data items to use as page path |
+| `fileExtension` | string | '.js' | File extension for generated pages (.js, .jsx, .ts, .tsx) |
+| `template` | function | (built-in) | Custom template function for page content |
+| `verbose` | boolean | true | Show detailed logs during generation |
 
-## Configuration File
+## Configuration File Formats
 
 You can use any of these formats:
 - `next-page-generator.config.js`
@@ -129,45 +160,109 @@ npx next-page-generator [options]
 ```
 
 Options:
-- `--help`, `-h`: Show help message
-- `--watch`, `-w`: Enable file watching
-- `--no-watch`: Disable file watching
-- `--verbose`, `-v`: Show detailed logs
-- `--quiet`, `-q`: Suppress detailed logs
+- `--help`, `-h`: Show help information
+- `--watch`, `-w`: Watch for changes (default: true)
+- `--no-watch`: Disable watching for changes
+- `--verbose`, `-v`: Show detailed logs (default: true)
+- `--quiet`, `-q`: Suppress logs
+
+## Advanced Usage
+
+### Custom Templates
+
+You can define custom page templates to control exactly how your pages are generated:
+
+```js
+// next-page-generator.config.js
+module.exports = {
+  sourceFile: 'data/pages.json',
+  outputDir: 'pages',
+  fileExtension: '.tsx', // Use TypeScript
+  template: (item) => `
+import React from 'react';
+import Layout from '../components/Layout';
+
+const ${item.path.split('/').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('')}Page = () => {
+  return (
+    <Layout>
+      <h1>${item.title}</h1>
+      <div className="content">
+        ${item.content}
+        <p>Last updated: ${new Date().toLocaleDateString()}</p>
+      </div>
+    </Layout>
+  );
+};
+
+export default ${item.path.split('/').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('')}Page;
+  `
+};
+```
+
+### Programmatic Usage
+
+For more control, you can use the package programmatically:
+
+```javascript
+// scripts/setup-pages.js
+const { setupPageGenerator } = require('next-page-generator');
+
+setupPageGenerator({
+  sourceFile: 'data/pages.json',
+  outputDir: 'pages',
+  watch: true,
+  verbose: true
+});
+
+console.log('Page generator initialized!');
+```
+
+Then in your package.json:
+
+```json
+{
+  "scripts": {
+    "dev": "node scripts/setup-pages.js & next dev"
+  }
+}
+```
+
+### Integration with Next.js Config
+
+For advanced use cases, you can integrate directly in your Next.js config:
+
+```javascript
+// next.config.js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+};
+
+// Only run the page generator during development
+if (process.env.NODE_ENV === 'development') {
+  require('next-page-generator/dist/cli');
+}
+
+module.exports = nextConfig;
+```
 
 ## Data Format
 
-Your data file should follow this format:
+Your data file should contain an `items` array with objects having at minimum:
 
 ```json
 {
   "items": [
-    { 
-      "path": "about", 
-      "title": "About Us", 
-      "content": "This is the about page."
-    },
-    { 
-      "path": "blog/first-post", 
-      "title": "My First Post", 
-      "content": "This is my first blog post."
+    {
+      "path": "route/to/page", // Required: becomes the route path
+      "title": "Page Title",   // Required: used in the page title
+      "content": "Content"     // Required: page content
     }
   ]
 }
 ```
 
-## Programmatic Usage
-
-You can also use the package programmatically:
-
-```javascript
-const { setupPageGenerator } = require('next-page-generator');
-
-setupPageGenerator({
-  sourceFile: 'data/pages.json',
-  // ...other options
-});
-```
+You can add any additional properties to the items, which will be available in your custom templates.
 
 ## License
 
