@@ -54,6 +54,12 @@ export interface GeneratorOptions {
    * @default true
    */
   verbose?: boolean;
+  
+  /**
+   * Debounce time in milliseconds for file change events
+   * @default 300
+   */
+  debounceTime?: number;
 }
 
 export interface Generator {
