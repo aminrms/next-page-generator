@@ -1,0 +1,53 @@
+{
+  "name": "next-page-generator",
+  "version": "0.1.0",
+  "description": "Dynamically generate Next.js pages from data sources",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "private": false,
+  "bin": {
+    "next-page-generator": "./dist/cli.js"
+  },
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start",
+    "type-check": "tsc",
+    "generate": "node scripts/generatePages.js",
+    "watch:generate": "node scripts/watchAndGenerate.js",
+    "dev:with-gen": "npm run generate && concurrently \"npm run watch:generate\" \"npm run dev\"",
+    "build:package": "tsc -p tsconfig.lib.json",
+    "prepublishOnly": "npm run build:package",
+    "test:package": "node test/test-package.js"
+  },
+  "dependencies": {
+    "chokidar": "^4.0.3",
+    "concurrently": "^9.2.0",
+    "next": "latest",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.21",
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.1",
+    "typescript": "^4.8.3"
+  },
+  "peerDependencies": {
+    "next": ">=12.0.0",
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0"
+  },
+  "keywords": [
+    "nextjs",
+    "react",
+    "page-generator",
+    "dynamic-pages"
+  ],
+  "author": "",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}

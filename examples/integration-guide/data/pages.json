@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "path": "generated/welcome",
+      "title": "Welcome to Generated Pages",
+      "content": "This page was automatically generated from JSON data!"
+    },
+    {
+      "path": "generated/about",
+      "title": "About Generated Pages",
+      "content": "Learn more about how these pages are generated."
+    },
+    {
+      "path": "blog/first-post",
+      "title": "My First Blog Post",
+      "content": "This is an example of a generated blog post."
+    }
+  ]
+}

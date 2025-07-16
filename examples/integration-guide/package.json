@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "dev": "concurrently \"next-page-generator\" \"next dev\"",
+    "build": "next-page-generator --no-watch && next build"
+  },
+  "dependencies": {
+    "concurrently": "^9.2.0",
+    "next": "latest",
+    "next-page-generator": "latest",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
